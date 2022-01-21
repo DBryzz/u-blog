@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}uTrains Blog
+{% endblock %}
+
+{% block body %}
+	{% if blogPosts %}
+		{% for blogPost in blogPosts %}
+			<table>
+				<thead style="display: none"></thead>
+				<tbody>
+					<tr>
+						<td rowspan="3">
+							<h1>{{ blogPost.title }}</h1>
+						</td>
+					</tr>
+
+					<tr>
+						<td rowspan="3">
+							<p>
+								{{ blogPost.body }}
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							{{ blogPost.author.name }}</td>
+						<td>{{ blogPost.createdAt|format_datetime() }}</td>
+						<td>{{ blogPost.updatedAt }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="container">
+				<h1>Article 1</h1>
+				<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Assumenda aspernatur repellat alias. Assumenda obcaecati sapiente, cupiditate rerum neque fugit commodi tenetur accusantium distinctio, alias explicabo, officiis nesciunt nostrum. Recusandae, cumque.</p>
+			</div>
+
+		{% endfor %}
+
+		{# <table id="articles" class="table table-striped">
+																									<thead>
+																										<tr>
+																											<th>Article Title</th>
+																											<th>Actions</th>
+																										</tr>
+																									</thead>
+																									<tbody>
+																										{% for article in articles %}
+																											<tr>
+																												<td>{{ article.title }}</td>
+																												<td>
+																													<a href="/article/{{ article.id }}" class="btn btn-dark">Show</a>
+																													<a href="/article/edit/{{ article.id }}" class="btn btn-light">Edit</a>
+																													<a href="#" class="btn btn-danger delete-article" data-id="{{ article.id }}">Delete</a>
+																												</td>
+																											</tr>
+																										{% endfor %}
+																									</tbody>
+																								</table> #}
+	{% else %}
+		<p>No articles to display</p>
+	{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+	<script src="/js/main.js"></script>
+{% endblock %}
+
+
+{# /* <style>
+							    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+							    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+							</style> */ #}
