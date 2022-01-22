@@ -1,12 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-	{{ article.title }}
+{% block title %}uTrains Blog
 {% endblock %}
 
+{% block stylesheet %}{% endblock %}
+
+
 {% block body %}
-	<h1>{{ article.title }}</h1>
-	<p>{{ article.body }}</p>
+
 	<hr>
-	<a href="/">Go Back</a>
+	<a href="{{ app.request.headers.get('referer') }}">Go Back</a>
+
+
+	{% if blogPost %}
+		<table class="example-wrapper">
+			<thead style="display: none"></thead>
+			<tbody class="code">
+				<tr>
+					<td colspan="3">
+						<h1>{{ blogPost.title }}</h1>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="3">
+						<a href="{{ path('show_post', {id: blogPost.id}) }}">
+							<p>
+								{{ blogPost.body }}
+							</p>
+						</a>
+					</td>
+				</tr>
+				<tr>
+
+					<td>On the:
+						{{ blogPost.createdAt|date('Y:m:d H:i:s') }}</td>
+					<td>Last Update:
+						{{ blogPost.updatedAt|date('Y:m:d H:i:s')  }}</td>
+					<td>by:
+						{{ blogPost.author.name }}</td>
+
+
+					<td>
+						<a href="">
+							<i class="fas fa-pencil-alt text-secondary"></i>
+						</a>
+					</td>
+					<td>
+						<a href="">
+							<i class="fas fa-trash-alt red"></i>
+						</a>
+					</td>
+
+
+				</tr>
+			</tbody>
+		</table>
+	{% else %}
+		<p>No articles to display</p>
+	{% endif %}
+{% endblock %}
+{% block javascripts %}
+	<script src="/js/main.js"></script>
 {% endblock %}

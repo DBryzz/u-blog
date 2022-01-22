@@ -23,7 +23,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/create", name="create_user")
+     * @Route("/user/create", name="register")
      * Method({"GET", "POST"})
      */
     public function new(Request $request)
@@ -31,8 +31,6 @@ class UserController extends AbstractController
         $user = new User();
         $form = $this->createFormBuilder($user)
 
-            // Below is all of the inputs that the author will see when creating their new author access. Each one contains its own attributes where applicable, such as the field `name` being required.
-            // Please note the naming of these form elements is the same naming as the entity. We will be passing in the Author entity so the form knows what the data is for.
             ->add(
                 'name',
                 TextType::class,
@@ -139,5 +137,27 @@ class UserController extends AbstractController
         return $this->render('user/create_user.html.twig', array(
             'form' => $form->createView()
         ));
+    }
+
+
+    /**
+     * @Route("/user/login", name="login")
+     * Method({"GET", "POST"})
+     */
+    public function login(Request $request)
+    {
+        $user = new User();
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy([$request->username]);
+
+        $msg = "";
+
+        if ($user == null) {
+            $msg = "User does not exist, please create an account";
+            return $this->redirectToRoute('posts', ['error' => $msg]);
+        }
+
+        $msg = "Logged in";
+
+        return $this->redirectToRoute('posts', ['success_msg' => $msg]);
     }
 }
