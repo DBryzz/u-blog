@@ -3,7 +3,14 @@
 {% block title %}uTrains Blog
 {% endblock %}
 
-{% block stylesheet %}{% endblock %}
+
+{% block stylesheet %}
+	<style>
+		.example-wrapper {
+			float: right;
+		}
+	</style>
+{% endblock %}
 
 
 {% block body %}
@@ -13,6 +20,39 @@
 
 
 	{% if blogPost %}
+		{% if user != null %}
+			<div class="col-md-4">
+				<form class="flex" action="{{ path('comment_post', {id: blogPost.id}) }}" method="post">
+					<input class="form-control me-sm-2" type="text" name="body" id="" placeholder="Comment....">
+					<button class="btn btn-primary my-2 my-sm-0  me-sm-2" type="submit">
+						<i class="white my-2 mx-1 my-sm-0">Post</i>
+					</button>
+				</form>
+			</div>
+			<div>
+				{% for comment in comments %}
+					<table>
+						<thead style="display: none;">
+							<tr>
+								<th>comment</th>
+								<th>comment</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td colspan="6">{{ comment.body }}</td>
+							</tr>
+							<tr>
+								<td colspan="1" ro>{{ comment.author.username }}</td>
+								<td colspan="1">{{ comment.createdAt|date('Y:m:d H:i:s') }}</td>
+
+							</tr>
+						</tbody>
+					</table>
+				{% endfor %}
+			</div>
+		{% endif %}
+
 		<table class="example-wrapper">
 			<thead style="display: none"></thead>
 			<tbody class="code">

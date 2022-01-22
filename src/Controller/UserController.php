@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -142,12 +143,15 @@ class UserController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+            $msg = "Registered Successfully";
 
+            $this->addFlash('success', $msg);
             return $this->redirectToRoute('posts');
         }
 
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
         return $this->render('user/create_user.html.twig', array(
-            'form' => $form->createView()
+            'form' => $form->createView(), 'categories' => $categories
         ));
     }
 
@@ -176,6 +180,7 @@ class UserController extends AbstractController
         if ($user == null) {
             $msg = "User does not exist, please create an account";
             $session->getFlashBag()->add('error', $msg);
+            $this->addFlash('error', $msg);
             return $this->redirectToRoute('posts');
         }
 
@@ -186,6 +191,7 @@ class UserController extends AbstractController
         $msg = "Logged in";
 
         $session->getFlashBag()->add('success', $msg);
+        $this->addFlash('success', $msg);
         return $this->redirectToRoute('posts');
     }
 
@@ -208,6 +214,7 @@ class UserController extends AbstractController
         $msg = "Logged out";
 
         $session->getFlashBag()->add('success', $msg);
+        $this->addFlash('success', $msg);
         return $this->redirectToRoute('posts');
     }
 }

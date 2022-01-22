@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BlogPost;
 use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\User;
 use PhpParser\Node\Expr\Cast\Object_;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -13,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -23,11 +25,42 @@ class PostController extends AbstractController
     /**
      * @Route("/posts", name="posts")
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $session = $request->getSession();
+
+        if ($session->get('user') == null) {
+            $session = new Session();
+            $session->set('user', new User());
+        }
+
         $posts = $this->getDoctrine()->getRepository(BlogPost::class)->findAll();
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+
         return $this->render('post/index.html.twig', [
-            'blogPosts' => $posts,
+            'blogPosts' => $posts, 'categories' => $categories
+        ]);
+    }
+
+    /**
+     * @Route("/posts/category/{id}", name="category_posts")
+     */
+    public function getCategoryPosts(Request $request, $id): Response
+    {
+        $category = $this->getDoctrine()->getRepository(Category::class)->find($id);
+
+        $session = $request->getSession();
+
+        if ($session->get('user') == null) {
+            $session = new Session();
+            $session->set('user', new User());
+        }
+
+        $posts = $this->getDoctrine()->getRepository(BlogPost::class)->findBy(['category' => $category]);
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+
+        return $this->render('post/index.html.twig', [
+            'blogPosts' => $posts, 'categories' => $categories
         ]);
     }
 
@@ -124,8 +157,9 @@ class PostController extends AbstractController
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }
 
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
         return $this->render('post/create_post.html.twig', array(
-            'form' => $form->createView()
+            'form' => $form->createView(), 'categories' => $categories
         ));
     }
 
@@ -135,8 +169,11 @@ class PostController extends AbstractController
     public function show($id): Response
     {
         $post = $this->getDoctrine()->getRepository(BlogPost::class)->find($id);
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
+        $comments = $this->getDoctrine()->getRepository(Comment::class)->findBy(['blogPost' => $post]);
+
         return $this->render('post/show_post.html.twig', [
-            'blogPost' => $post,
+            'blogPost' => $post, 'categories' => $categories, 'comments' => $comments
         ]);
     }
 
@@ -229,11 +266,40 @@ class PostController extends AbstractController
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }
 
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
         return $this->render('post/edit_post.html.twig', array(
-            'form' => $form->createView()
+            'form' => $form->createView(), 'categories' => $categories
         ));
     }
 
+    /**
+     * @Route("/post/{id}/comment", name="comment_post")
+     * Method({"POST"})
+     */
+    public function comment(Request $request, $id): Response
+    {
+        $session = $request->getSession()->get('user');
+        $comment = new Comment();
+
+        $body = $request->request->get('body');
+        $post = $this->getDoctrine()->getRepository(BlogPost::class)->find($id);
+        $commenter = $this->getDoctrine()->getRepository(User::class)->find($session->getId());
+
+        $comment->setBody($body);
+        $comment->setAuthor($commenter);
+        $comment->setBlogPost($post);
+        $comment->prePersist();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($comment);
+        $entityManager->flush();
+
+
+
+        // $comments = $this->getDoctrine()->getRepository(Comment::class)->findBy(['blogPost' => $post]);
+
+        return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
+    }
 
 
 

@@ -50,7 +50,7 @@ class Fixtures extends Fixture
 
         $category4 = new Category();
         $category4
-            ->setTitle('social')
+            ->setTitle('SOCIAL')
             ->setDescription('Something on social...');
         $manager->persist($category4);
 
