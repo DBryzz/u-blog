@@ -38,24 +38,26 @@
 						<td>by:
 							{{ blogPost.author.name }}</td>
 
-
-						<td>
-							<a href="{{ path('edit_post', {id: blogPost.id}) }}">
-								<i class="fas fa-pencil-alt text-secondary"></i>
-							</a>
-						</td>
-						<td>
-							<a href="">
-								<i class="fas fa-trash-alt red"></i>
-							</a>
-						</td>
-
+						{% if user.role == 'AUTHOR' %}
+							<td>
+								<a href="{{ path('edit_post', {id: blogPost.id}) }}">
+									<i class="fas fa-pencil-alt text-secondary"></i>
+								</a>
+							</td>
+							<td>
+								<a href="">
+									<i class="fas fa-trash-alt red"></i>
+								</a>
+							</td>
+						{% endif %}
 
 					</tr>
+
 				</tbody>
+
+
 			</table>
 		{% endfor %}
-
 	{% else %}
 		<p>No articles to display</p>
 	{% endif %}

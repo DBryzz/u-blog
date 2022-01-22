@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\BlogPost;
+use App\Entity\Category;
 use App\Entity\User;
+use PhpParser\Node\Expr\Cast\Object_;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +18,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PostController extends AbstractController
 {
+
+
     /**
      * @Route("/posts", name="posts")
      */
@@ -26,6 +31,8 @@ class PostController extends AbstractController
         ]);
     }
 
+
+
     /**
      * @Route("/post/new", name="create_post")
      * Method({"GET", "POST"})
@@ -33,6 +40,7 @@ class PostController extends AbstractController
     public function new(Request $request)
     {
         $post = new BlogPost();
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
 
         $form = $this->createFormBuilder($post)
             ->add(
@@ -43,7 +51,6 @@ class PostController extends AbstractController
                     'attr' => array('class' => 'form-control')
                 )
             )
-
             ->add(
                 'description',
                 TextType::class,
@@ -60,24 +67,59 @@ class PostController extends AbstractController
                     'attr' => array('class' => 'form-control')
                 )
             )
+            ->add(
+                'category',
+                ChoiceType::class,
+                [
+                    'choices' => array(
+                        'Technology' => $categories[0],
+                        'Education' => $categories[1],
+                        'Religion' => $categories[2],
+                        'Social' => $categories[3]
+
+                    ),
+                    'attr' => ['class' => 'my-4'],
+
+                    // 'choices_as_values' => true,
+                    'multiple' => false,
+                    'expanded' => false,
+                ]
+            )
             ->add('save', SubmitType::class, array(
                 'label' => 'Create',
                 'attr' => array('class' => 'btn btn-primary mt-3')
             ))
             ->getForm();
 
+
+
+        // dd($form);
+
+        $session = $request->getSession();
+        $userSession = $session->get('user');
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userSession->getId());
+
+        // dd($user);
+
         $form->handleRequest($request);
+
 
         if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
             $post->prePersist();
-            $user = $this->getDoctrine()->getRepository(User::class)->find(17);
             $post->setAuthor($user);
-            $post->setSlug($post->getId() . " - " . substr($post->getTitle(), 10, 15));
+            $post->setCategory($post->getCategory());
+            $slug = $post->getAuthor()->getId() . "-"
+                . substr($post->getTitle(), 6, 8) . "-"
+                . substr($post->getTitle(), 0, 2) . "-"
+                . substr($post->getTitle(), 3, 5);
+            $post->setSlug($slug);
             $entityManager->persist($post);
             $entityManager->flush();
+            $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['slug' => $post->getSlug()]);
+            // dd($post);
 
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }
@@ -106,6 +148,7 @@ class PostController extends AbstractController
     public function edit(Request $request, $id)
     {
         $post = new BlogPost();
+        $categories = $this->getDoctrine()->getRepository(Category::class)->findAll();
         $post = $this->getDoctrine()->getRepository(BlogPost::class)->find($id);
 
         $form = $this->createFormBuilder($post)
@@ -134,24 +177,54 @@ class PostController extends AbstractController
                     'attr' => array('class' => 'form-control')
                 )
             )
+            ->add(
+                'category',
+                ChoiceType::class,
+                [
+                    'choices' => array(
+                        'Technology' => $categories[0],
+                        'Education' => $categories[1],
+                        'Religion' => $categories[2],
+                        'Social' => $categories[3]
+
+                    ),
+                    'attr' => ['class' => 'my-4'],
+
+                    // 'choices_as_values' => true,
+                    'multiple' => false,
+                    'expanded' => false,
+                ]
+            )
             ->add('save', SubmitType::class, array(
                 'label' => 'Create',
                 'attr' => array('class' => 'btn btn-primary mt-3')
             ))
             ->getForm();
 
+
+        $session = $request->getSession();
+        $userSession = $session->get('user');
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userSession->getId());
+        $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['slug' => $post->getSlug()]);
+
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $post = $form->getData();
+            $postModified = $form->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
-            $post->preUpdate();
-            $user = $this->getDoctrine()->getRepository(User::class)->find(17);
-            $post->setAuthor($user);
-            $post->setSlug($post->getId() . " - " . substr($post->getTitle(), 10, 15));
+            $postModified->preUpdate();
+            $postModified->setAuthor($user);
+            $postModified->setCategory($postModified->getCategory());
+            $slug = $post->getAuthor()->getId() . "-"
+                . substr($post->getTitle(), 6, 8) . "-"
+                . substr($post->getTitle(), 0, 2) . "-"
+                . substr($post->getTitle(), 3, 5);
+            $post->setSlug($slug);
             $entityManager->persist($post);
             $entityManager->flush();
+            $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['slug' => $post->getSlug()]);
 
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }

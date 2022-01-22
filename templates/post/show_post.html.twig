@@ -24,11 +24,9 @@
 
 				<tr>
 					<td colspan="3">
-						<a href="{{ path('show_post', {id: blogPost.id}) }}">
-							<p>
-								{{ blogPost.body }}
-							</p>
-						</a>
+						<p>
+							{{ blogPost.body }}
+						</p>
 					</td>
 				</tr>
 				<tr>
@@ -40,18 +38,18 @@
 					<td>by:
 						{{ blogPost.author.name }}</td>
 
-
-					<td>
-						<a href="">
-							<i class="fas fa-pencil-alt text-secondary"></i>
-						</a>
-					</td>
-					<td>
-						<a href="">
-							<i class="fas fa-trash-alt red"></i>
-						</a>
-					</td>
-
+					{% if user.role == 'AUTHOR' %}
+						<td>
+							<a href="">
+								<i class="fas fa-pencil-alt text-secondary"></i>
+							</a>
+						</td>
+						<td>
+							<a href="">
+								<i class="fas fa-trash-alt red"></i>
+							</a>
+						</td>
+					{% endif %}
 
 				</tr>
 			</tbody>

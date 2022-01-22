@@ -1,6 +1,9 @@
+{% set user = app.session.get('user') %}
+
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="path{{ path('posts') }}">uBlog</a>
+		<a class="navbar-brand" href="{{ path('posts') }}">uBlog</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -19,9 +22,7 @@
 				<li class="nav-item">
 					<a class="nav-link" href="#">Pricing</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="#">About</a>
-				</li>
+
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
 					<div class="dropdown-menu">
@@ -32,24 +33,47 @@
 						<a class="dropdown-item" href="#">Separated link</a>
 					</div>
 				</li>
+				{% if user.username == null %}
+					<li class="nav-item">
+						<a class="nav-link" href="{{ path('register') }}">
+							<i class="fas fa-user-plus"></i>
+						</a>
+
+					</li>
+				{% endif %}
+
+
 			</ul>
-			<form class="d-flex">
-				{# <input class="form-control me-sm-2" type="text" placeholder="Search"> #}
-				{# <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button> #}
-					<a href="{{ path('login') }}"> <i class="fas fa-user-lock white my-2 my-sm-0"></i>
-				</a>
 
-				<a href="{{ path('register') }}">
-					<i class="fas fa-user-lock white my-2 my-sm-0"></i>
-				</a>
+		</a>
 
-
-				<a class="fas fa-user-lock btn btn-secondary my-2 my-sm-0" href="{{ path('create_post') }}">
-					New Post
-				</a>
-
-
+		{% if user.username == null %}
+			<form class="d-flex" action="{{ path('login') }}" method="post">
+				<input class="form-control me-sm-2" type="text" name="username" id="" placeholder="Enter username">
+				<button class="btn btn-secondary my-2 my-sm-0  me-sm-2" type="submit">
+					<i class="fas fa-user-lock white my-2 mx-1 my-sm-0">Login</i>
+				</button>
 			</form>
-		</div>
+		{% endif %}
+
+
+		{# </form> #}
+
+
+		{% if user.role == 'AUTHOR' %}
+			<a class=" btn btn-secondary my-2 me-sm-2 my-sm-0" href="{{ path('create_post') }}">
+
+				<i class="fas fa-plus-circle white my-2 mx-1 my-sm-0">New Post</i>
+			</a>
+		{% endif %}
+		{% if user != null %}
+			{% if user.role != null %}
+				<a class=" btn btn-secondary my-2 my-sm-0" href="{{ path('logout') }}">
+					<i class="fas fa-sign-out-alt white my-2 mx-1 my-sm-0">Logout</i>
+				</a>
+			{% endif %}
+		{% endif %}
+
+
 	</div>
-</nav>
+</div></nav>

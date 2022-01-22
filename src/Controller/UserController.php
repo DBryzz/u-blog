@@ -3,10 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use Doctrine\DBAL\Types\TextType;
+use App\Repository\UserRepository;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -57,10 +62,17 @@ class UserController extends AbstractController
             )
             ->add(
                 'role',
-                TextType::class,
+                ChoiceType::class,
                 [
-                    'constraints' => [new NotBlank()],
-                    'attr' => ['class' => 'form-control']
+                    'choices' => array(
+                        ' Author ' => 'AUTHOR',
+                        ' Viewer ' => 'VIEWER'
+                    ),
+                    'attr' => ['class' => 'my-2'],
+
+                    // 'choices_as_values' => true, 
+                    'multiple' => false,
+                    'expanded' => true
                 ]
             )
             ->add(
@@ -107,7 +119,7 @@ class UserController extends AbstractController
                 'github',
                 TextType::class,
                 [
-                    'attr' => ['class' => 'form-control'],
+                    'attr' => ['class' => 'form-control col-xs-2'],
                     'required' => false
                 ]
             )
@@ -131,7 +143,7 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('article_list');
+            return $this->redirectToRoute('posts');
         }
 
         return $this->render('user/create_user.html.twig', array(
@@ -142,22 +154,60 @@ class UserController extends AbstractController
 
     /**
      * @Route("/user/login", name="login")
-     * Method({"GET", "POST"})
+     * Method({"POST"})
      */
     public function login(Request $request)
     {
-        $user = new User();
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy([$request->username]);
+        // retrieve messages
+        /*  foreach ($session->getFlashBag()->get('notice', []) as $message) {
+            echo '<div class="flash-notice">' . $message . '</div>';
+        } */
 
+        $username = $request->request->get('username');
+        $session = new Session();
+        $session->start();
+
+        $user = new User();
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['username' => $username]);
+
+        // dd($user);
         $msg = "";
 
         if ($user == null) {
             $msg = "User does not exist, please create an account";
-            return $this->redirectToRoute('posts', ['error' => $msg]);
+            $session->getFlashBag()->add('error', $msg);
+            return $this->redirectToRoute('posts');
         }
 
+
+        // set and get session attributes
+        $session->set('user', $user);
+        // dd($session->get('user'));
         $msg = "Logged in";
 
-        return $this->redirectToRoute('posts', ['success_msg' => $msg]);
+        $session->getFlashBag()->add('success', $msg);
+        return $this->redirectToRoute('posts');
+    }
+
+    /**
+     * @Route("/user/logout", name="logout")
+     * Method({"GET"})
+     */
+    public function logout(Request $request)
+    {
+        $session = $request->getSession();
+        // dd($session->get('user'));
+
+        $session->invalidate();
+
+        $msg = "";
+
+        $session = new Session();
+        $session->set('user', new User());
+        // dd($session->get('user'));
+        $msg = "Logged out";
+
+        $session->getFlashBag()->add('success', $msg);
+        return $this->redirectToRoute('posts');
     }
 }

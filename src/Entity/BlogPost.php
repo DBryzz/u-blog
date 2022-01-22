@@ -23,6 +23,12 @@ class BlogPost
     private $title;
 
     /**
+     * @ORM\ManyToOne(targetEntity=Category::class)
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+     */
+    private $category;
+
+    /**
      * @ORM\Column(name="slug", type="string", length=255)
      */
     private $slug;
@@ -59,6 +65,8 @@ class BlogPost
 
 
 
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -72,6 +80,18 @@ class BlogPost
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getCategory(): ?category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
