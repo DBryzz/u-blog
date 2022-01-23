@@ -272,6 +272,30 @@ class PostController extends AbstractController
         ));
     }
 
+
+    /**
+     * @Route("/post/delete/{id}", name="delete_post")
+     * Method({"DELETE})
+     */
+    public function delete($id)
+    {
+        $post = new BlogPost();
+        $post = $this->getDoctrine()->getRepository(BlogPost::class)->find($id);
+        $comments = $this->getDoctrine()->getRepository(Comment::class)->findBy(['blogPost' => $post]);
+        foreach ($comments as $comment) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($comment);
+            $entityManager->flush();
+        }
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($post);
+        $entityManager->flush();
+
+        $response = new Response();
+        $response->send();
+    }
+
+
     /**
      * @Route("/post/{id}/comment", name="comment_post")
      * Method({"POST"})

@@ -10,10 +10,10 @@
 
 
 	{% if blogPosts %}
-		{% for blogPost in blogPosts %}
-			<table class="example-wrapper">
-				<thead style="display: none"></thead>
-				<tbody class="code">
+		<table id="blogPosts" class="example-wrapper">
+			<thead style="display: none"></thead>
+			<tbody class="code">
+				{% for blogPost in blogPosts %}
 					<tr>
 						<td colspan="3">
 							<h1>{{ blogPost.title }}</h1>
@@ -45,23 +45,18 @@
 								</a>
 							</td>
 							<td>
-								<a href="">
-									<i class="fas fa-trash-alt red"></i>
+								<a href="#" class="">
+									<i class="fas fa-trash-alt red delete-post" data-id="{{ blogPost.id }}"></i>
 								</a>
 							</td>
 						{% endif %}
-
 					</tr>
+				{% endfor %}
 
-				</tbody>
-
-
-			</table>
-		{% endfor %}
-	{% else %}
-		<p>No articles to display</p>
-	{% endif %}
-{% endblock %}
-{% block javascripts %}
-	<script src="/js/main.js"></script>
-{% endblock %}
+			</tbody>
+		</tbody>
+	</table>
+{% else %}
+	<p>No articles to display</p>
+{% endif %}{% endblock %}{% block javascripts %}
+<script src="/js/main.js"></script>{% endblock %}

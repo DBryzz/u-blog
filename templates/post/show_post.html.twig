@@ -20,6 +20,53 @@
 
 
 	{% if blogPost %}
+
+
+		<table id="blogPosts" class="example-wrapper">
+
+			<thead style="display: none"></thead>
+			<tbody class="code">
+				<tr>
+					<td colspan="3">
+						<h1>{{ blogPost.title }}</h1>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="3">
+						<p>
+							{{ blogPost.body }}
+						</p>
+					</td>
+				</tr>
+				<tr>
+
+					<td>On the:
+						{{ blogPost.createdAt|date('Y:m:d H:i:s') }}</td>
+					<td>Last Update:
+						{{ blogPost.updatedAt|date('Y:m:d H:i:s')  }}</td>
+					<td>by:
+						{{ blogPost.author.name }}</td>
+
+					{% if user.role == 'AUTHOR' %}
+						<td>
+							<a href="{{ path('edit_post', {id: blogPost.id}) }}">
+
+								<i class="fas fa-pencil-alt text-secondary"></i>
+							</a>
+						</td>
+						<td>
+							<a href="#">
+								<i data-id={{ blogPost.id }} class="fas fa-trash-alt red delete-post"></i>
+
+							</a>
+						</td>
+					{% endif %}
+
+				</tr>
+			</tbody>
+		</table>
+
 		{% if user != null %}
 			<div class="col-md-4">
 				<form class="flex" action="{{ path('comment_post', {id: blogPost.id}) }}" method="post">
@@ -53,47 +100,6 @@
 			</div>
 		{% endif %}
 
-		<table class="example-wrapper">
-			<thead style="display: none"></thead>
-			<tbody class="code">
-				<tr>
-					<td colspan="3">
-						<h1>{{ blogPost.title }}</h1>
-					</td>
-				</tr>
-
-				<tr>
-					<td colspan="3">
-						<p>
-							{{ blogPost.body }}
-						</p>
-					</td>
-				</tr>
-				<tr>
-
-					<td>On the:
-						{{ blogPost.createdAt|date('Y:m:d H:i:s') }}</td>
-					<td>Last Update:
-						{{ blogPost.updatedAt|date('Y:m:d H:i:s')  }}</td>
-					<td>by:
-						{{ blogPost.author.name }}</td>
-
-					{% if user.role == 'AUTHOR' %}
-						<td>
-							<a href="">
-								<i class="fas fa-pencil-alt text-secondary"></i>
-							</a>
-						</td>
-						<td>
-							<a href="">
-								<i class="fas fa-trash-alt red"></i>
-							</a>
-						</td>
-					{% endif %}
-
-				</tr>
-			</tbody>
-		</table>
 	{% else %}
 		<p>No articles to display</p>
 	{% endif %}
