@@ -113,7 +113,6 @@ class PostController extends AbstractController
                     ),
                     'attr' => ['class' => 'my-4'],
 
-                    // 'choices_as_values' => true,
                     'multiple' => false,
                     'expanded' => false,
                 ]
@@ -125,17 +124,11 @@ class PostController extends AbstractController
             ->getForm();
 
 
-
-        // dd($form);
-
         $session = $request->getSession();
         $userSession = $session->get('user');
         $user = $this->getDoctrine()->getRepository(User::class)->find($userSession->getId());
 
-        // dd($user);
-
         $form->handleRequest($request);
-
 
         if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();
@@ -152,7 +145,6 @@ class PostController extends AbstractController
             $entityManager->persist($post);
             $entityManager->flush();
             $post = $this->getDoctrine()->getRepository(BlogPost::class)->findOneBy(['slug' => $post->getSlug()]);
-            // dd($post);
 
             return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
         }
@@ -227,7 +219,6 @@ class PostController extends AbstractController
                     ),
                     'attr' => ['class' => 'my-4'],
 
-                    // 'choices_as_values' => true,
                     'multiple' => false,
                     'expanded' => false,
                 ]
@@ -319,47 +310,6 @@ class PostController extends AbstractController
         $entityManager->flush();
 
 
-
-        // $comments = $this->getDoctrine()->getRepository(Comment::class)->findBy(['blogPost' => $post]);
-
         return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
     }
-
-
-
-    /**
-     * @Route("/article/edit/{id}", name="edit_article")
-     * Method({"GET", "POST"})
-     */
-    /* public function edit(Request $request, $id)
-    {
-        $article = new Article();
-        $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
-
-        $form = $this->createFormBuilder($article)
-            ->add('title', TextType::class, array('attr' => array('class' => 'form-control')))
-            ->add('body', TextareaType::class, array(
-                'required' => false,
-                'attr' => array('class' => 'form-control')
-            ))
-            ->add('save', SubmitType::class, array(
-                'label' => 'Update',
-                'attr' => array('class' => 'btn btn-primary mt-3')
-            ))
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
-
-            return $this->redirectToRoute('article_list');
-        }
-
-        return $this->render('articles/edit.html.twig', array(
-            'form' => $form->createView()
-        ));
-    } */
 }

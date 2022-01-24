@@ -58,8 +58,6 @@ class UserDatabaseTest extends KernelTestCase
     public function test_a_user_record_can_be_created_in_the_database()
     {
         // Set up
-        // $user = $this->makeUser(true);
-
         $this->entityManager->persist($this->user);
 
         // Do something

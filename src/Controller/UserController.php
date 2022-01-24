@@ -71,7 +71,6 @@ class UserController extends AbstractController
                     ),
                     'attr' => ['class' => 'my-2'],
 
-                    // 'choices_as_values' => true, 
                     'multiple' => false,
                     'expanded' => true
                 ]
@@ -162,10 +161,6 @@ class UserController extends AbstractController
      */
     public function login(Request $request)
     {
-        // retrieve messages
-        /*  foreach ($session->getFlashBag()->get('notice', []) as $message) {
-            echo '<div class="flash-notice">' . $message . '</div>';
-        } */
 
         $username = $request->request->get('username');
         $session = new Session();
@@ -174,7 +169,6 @@ class UserController extends AbstractController
         $user = new User();
         $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['username' => $username]);
 
-        // dd($user);
         $msg = "";
 
         if ($user == null) {
@@ -187,7 +181,6 @@ class UserController extends AbstractController
 
         // set and get session attributes
         $session->set('user', $user);
-        // dd($session->get('user'));
         $msg = "Logged in";
 
         $session->getFlashBag()->add('success', $msg);
@@ -202,15 +195,12 @@ class UserController extends AbstractController
     public function logout(Request $request)
     {
         $session = $request->getSession();
-        // dd($session->get('user'));
-
         $session->invalidate();
 
         $msg = "";
 
         $session = new Session();
         $session->set('user', new User());
-        // dd($session->get('user'));
         $msg = "Logged out";
 
         $session->getFlashBag()->add('success', $msg);
