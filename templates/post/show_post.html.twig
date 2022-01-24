@@ -70,12 +70,22 @@
 		{% if user != null %}
 			<div class="col-md-4">
 				<form class="flex" action="{{ path('comment_post', {id: blogPost.id}) }}" method="post">
-					<input class="form-control me-sm-2" type="text" name="body" id="" placeholder="Comment....">
-					<button class="btn btn-primary my-2 my-sm-0  me-sm-2" type="submit">
-						<i class="white my-2 mx-1 my-sm-0">Post</i>
-					</button>
+					{% if user.role == 'VIEWER' %}
+						<input class="form-control me-sm-2" type="text" name="body" id="" placeholder="Comment....">
+						<button class="btn btn-primary my-2 my-sm-0  me-sm-2" type="submit">
+							<i class="white my-2 mx-1 my-sm-0">Post</i>
+						</button>
+					{% endif %}
+					{% if user.role == '' %}
+						<input class="form-control me-sm-2" type="text" name="body" id="" placeholder="Login to comment :)" readonly>
+						<button class="btn btn-primary my-2 my-sm-0 me-sm-2 disabled" type="submit">
+							<i class="white my-2 mx-1 my-sm-0">Post</i>
+						</button>
+					{% endif %}
+
 				</form>
 			</div>
+
 			<div>
 				{% for comment in comments %}
 					<table>

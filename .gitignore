@@ -8,6 +8,7 @@
 /var/
 /vendor/
 /.env
+/mysql
 ###< symfony/framework-bundle ###
 
 ###> symfony/web-server-bundle ###

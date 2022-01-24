@@ -24,10 +24,25 @@ class Fixtures extends Fixture
             ->setCompany('uTrains')
             ->setShortBio('Lorem Ipsum is simply placeholder text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages.')
             ->setContact('(+237) 6 70 00 00 00')
+            ->setFacebook('dbryzzbloggs')
+            ->setTwitter('dbryzz.bloggs')
+            ->setGithub('dbryzz-bloggs');
+        $manager->persist($user);
+
+        $user1 = new User();
+
+        $user1
+            ->setName('John Doe')
+            ->setUsername('johndoe')
+            ->setRole('VIEWER')
+            ->setEmail('john.doe@email.com')
+            ->setCompany('MIA ltd')
+            ->setShortBio('Lorem Ipsum is simply placeholder text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages.')
+            ->setContact('(+237) 6 90 00 00 00')
             ->setFacebook('joebloggs')
             ->setTwitter('joe.bloggs')
             ->setGithub('joe-bloggs');
-        $manager->persist($user);
+        $manager->persist($user1);
 
 
         $category1 = new Category();
